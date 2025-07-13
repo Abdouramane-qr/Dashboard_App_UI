@@ -36,4 +36,31 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}}
+      
+    - name: cmake-configure
+  # You may pin to the exact commit or the version.
+  # uses: snickerbockers/cmake-configure@34c25d17135428976b13963a8e5e3b1b0b277fd1
+  uses: snickerbockers/cmake-configure@prerel1
+  jobs:
+  test:
+    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node_version: ['18.x', '20.x']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node_version }}
+
+    - name: npm install, build and test
+      run: |
+        npm install
+        npm run build --if-present
+        npm test
+          
 
